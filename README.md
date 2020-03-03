@@ -3,7 +3,7 @@ Rush! Rush!
 
 |面试题|题目|
 |:-:|:-:|
-|2|[实现 Singleton 模式](https://github.com/wavever/SwordToOffer/blob/master/Tree/实现Singleton模式.md)|
+|2|[实现 Singleton 模式]([[https://github.com/wavever/SwordToOffer/blob/master/%E5%AE%9E%E7%8E%B0Singleton%E6%A8%A1%E5%BC%8F.md](https://github.com/wavever/SwordToOffer/blob/master/实现Singleton模式.md)))|
 |3|[数组中重复的数字](https://github.com/wavever/SwordToOffer/blob/master/Array/数组中重复的数字.md)|
 |4|[二维数组中的查找](https://github.com/wavever/SwordToOffer/blob/master/Array/二维数组中的查找.md)|
 |5|[替换空格](https://github.com/wavever/SwordToOffer/blob/master/String/替换空格.md)|
