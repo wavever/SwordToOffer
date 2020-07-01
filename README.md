@@ -8,7 +8,9 @@ Rush! Rush!
 
 实现单例模式的方法有很多，这里挑几种比较常见的：
 
-**饿汉式：**会在类加载的时候就进行初始化，如果不是很早就需要使用，则会造成浪费。
+**饿汉式：**
+
+会在类加载的时候就进行初始化，如果不是很早就需要使用，则会造成浪费。
 
 ``` java
 public class Singleton {
@@ -16,7 +18,9 @@ public class Singleton {
 }
 ```
 
-**懒汉式：**只在需要时才会进行初始化，避免资源的浪费，缺点是第一次加载时会比较耗时，每次获取都要同步。
+**懒汉式：**
+
+只在需要时才会进行初始化，避免资源的浪费，缺点是第一次加载时会比较耗时，每次获取都要同步。
 
 ``` java
 private static Singleton singletonLazy;
@@ -29,7 +33,9 @@ private static Singleton singletonLazy;
 }
 ```
 
-**DCL：**Double Check Lock，优点：只在需要时初始化、线程安全、获取到对象后再次调用不进行同步锁，但在某些情况下还是会失效，关于 volatile 关键字可以参看[这篇文章](http://www.importnew.com/18126.html)。
+**DCL：**
+
+Double Check Lock，优点：只在需要时初始化、线程安全、获取到对象后再次调用不进行同步锁，但在某些情况下还是会失效，关于 volatile 关键字可以参看[这篇文章](http://www.importnew.com/18126.html)。
 
 ``` java
 private static volatile Singleton singletonDCL;
@@ -46,7 +52,9 @@ private static volatile Singleton singletonDCL;
 }
 ```
 
-**静态内部类:**具有懒加载的同时保证了唯一性，推荐使用。
+**静态内部类:**
+
+具有懒加载的同时保证了唯一性，推荐使用。
 
 ``` java
 public static Singleton getSingletonInner() {
@@ -135,7 +143,9 @@ public class Solution {
 }
 ```
 
-**考点：**递归、循环、栈、链表
+**考点：**
+
+递归、循环、栈、链表
 
 ### [5、重建二叉树](https://www.nowcoder.com/practice/8a19cbe657394eeaac2f6ea9b0f6fcf6?tpId=13&&tqId=11157&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
@@ -182,5 +192,88 @@ public TreeNode reConstructBinaryTree(int [] pre,int [] in) {
 }
 ```
 
-**考点：**树、递归
+**考点：**
+
+树、递归
+
+### [6、用两个栈实现队列](https://www.nowcoder.com/practice/54275ddae22f475981afa2244dd448c6?tpId=13&&tqId=11158&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+用两个栈来实现一个队列，完成在队列尾部插入节点和在队列头部删除节点的功能，队列中的元素为int类型。
+
+**分析：**
+
+栈是属于“先进后出”，而队列是属于“先进先出”，用两个栈来实现“先进先出”，需要两个栈来配合，当添加元素时，先加入栈A，比如加入元素ab，此时来删除节点，则需要先删除a，那么就将栈A内的元素逐一都压入栈B，此时栈B内则是ba，弹出栈顶元素a，则完成了“先进先出”，因此，实现的关键就在于：插入元素时直接压入栈A，而删除元素时，如果栈B为空，则先将栈A的元素全部压入栈B，再做删除。
+
+```java
+public class Solution {
+    Stack<Integer> stack1 = new Stack<>();
+    Stack<Integer> stack2 = new Stack<>();
+    
+    public void push(int node) {
+        stack1.push(node);
+    }
+    
+    public int pop() {
+        if (stack2.size() <= 0) {
+            while(stack1.size() > 0){
+                stack2.push(stack1.pop());
+            }
+        }
+        return stack2.pop();
+    }
+}
+```
+
+### [7、斐波那契数列](https://www.nowcoder.com/practice/c6c7742f5ba7442aada113136ddea0c3?tpId=13&&tqId=11160&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+写一个函数，输入 n，求斐波那契数列的第 n 项，斐波那契数列定义如下：
+
+- n=0  0
+- n=1  1
+- n>1  f(n-1)+f(n-2)
+
+**分析：**
+
+首先，使用递归来求解很简单，但会有严重的效率问题，因为重复的计算太多，改进的方法则是避免重复的计算，对已经计算过的值进行保存，或是从下往上计算，根据f(0)和f(1)计算出f(2)，再根据f(1)和f(2)计算出f(3)，然后通过循环可以得到第n项，时间复杂度为 O(n)。
+
+```java
+public int Fibonacci(int n) {
+        if (n == 0) return 0;
+        if (n == 1) return 1;
+        int f1 = 0;
+        int f2 = 1;
+        int fn = 0;
+        for (int i = 2; i <= n; i++) {
+            fn = f1 + f2;//计算的当前值
+            f1 = f2;//保存前2位的值，即 n-2
+            f2 = fn;//保存前1位的值，即 n-1
+        }
+        return fn;
+    }
+```
+
+### [8、青蛙跳台阶问题](https://www.nowcoder.com/practice/8c82a5b80378478f9484d87d1c5f12a4?tpId=13&&tqId=11161&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+一只青蛙一次可以跳上1级台阶，也可以跳上2级。求该青蛙跳上一个n级的台阶总共有多少种跳法（先后次序不同算不同的结果）。
+
+**分析：**
+
+该问题就是斐波那契数列的实际应用，1级台阶有一种跳法，2级台阶则有两种跳法：一次跳2级，或是跳两次，每次跳1级。
+
+```java
+public int JumpFloor(int n) {
+        if (n <= 0) return 0;
+        if (n == 1) return 1;
+        if (n == 2) return 2;
+        int f1 = 1;
+        int f2 = 2;
+        int fn = 0;
+        for (int i = 3; i <= n; i++) {
+            fn = f1 + f2;
+            f1 = f2;
+            f2 = fn;
+        }
+        return fn;
+    }
+```
 
