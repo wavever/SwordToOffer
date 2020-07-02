@@ -277,3 +277,32 @@ public int JumpFloor(int n) {
     }
 ```
 
+[变态跳台阶](https://www.nowcoder.com/practice/22243d016f6b47f2a6928b4313c85387?tpId=13&&tqId=11162&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+一只青蛙一次可以跳上1级台阶，也可以跳上2级……它也可以跳上n级。求该青蛙跳上一个n级的台阶总共有多少种跳法。
+
+**分析：**
+
+如果第一次跳 1 级，那么剩下的 n-1 级，跳法有 f(n-1) 种；如果第一次跳 2 级，那么剩下的 n-2 级，跳法有 f(n-2) 种；依次类对，如果第一次跳 n-1 级，则剩下的有 1 种跳法，因此总跳法为: f(n) = 1+f(n-1) + f(n-2)+....+f(1)  （第一个1是跳n阶只有一种方法），一阶的时候 f(1) = 1 ；有两阶的时候可以有 f(2) =1+f(1)=2；有三阶的时候可以有 f(3) = 1+f(2)+f(1)=4...依次内推，有n阶时f(n)=2^(n-1)。       
+
+```java
+public class Solution {
+    public int JumpFloorII(int target) {
+        return 1 << (target - 1);
+    }
+}
+```
+
+[矩形覆盖](https://www.nowcoder.com/practice/72a5a919508a4251859fb2cfb987a0e6?tpId=13&&tqId=11163&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+我们可以用2x1的小矩形（如左下图中的矩形，宽高比为1:2）横着或者竖着去覆盖更大的矩形。请问用n个2x1的小矩形无重叠地覆盖一个2xn的大矩形，总共有多少种方法？比如n=3时，2x3的矩形块有3种覆盖方法：
+
+![](https://uploadfiles.nowcoder.com/images/20200218/6384065_1581999858239_64E40A35BE277D7E7C87D4DCF588BE84)
+
+**分析：**
+
+- n=1，形状等于小矩形，有1种方法；
+- n=2时，都横放或者都竖放，有2种方法；
+- n=3时，如上图所示，有3种方法，但可以看出，其摆放方法为n为2的数量加n为1的数量
+
+因此该问题还是斐波那契数列，解法与青蛙跳台阶一致。
