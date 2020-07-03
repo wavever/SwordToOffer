@@ -306,3 +306,69 @@ public class Solution {
 - n=3时，如上图所示，有3种方法，但可以看出，其摆放方法为n为2的数量加n为1的数量
 
 因此该问题还是斐波那契数列，解法与青蛙跳台阶一致。
+
+### [9、旋转数组的最小数字](https://www.nowcoder.com/practice/9f3231a991af4f55b95579b44b7a01ba?tpId=13&&tqId=11159&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+把一个数组最开始的若干个元素搬到数组的末尾，我们称之为数组的旋转。
+输入一个递增排序的数组的一个旋转，输出旋转数组的最小元素。
+例如数组{3,4,5,1,2}为{1,2,3,4,5}的一个旋转，该数组的最小值为1。
+
+**分析：**
+
+首先需要了解到，该题目可以直接通过遍历数组来找出最小元素，但这样没有利用到该数组为递增排序的特性，并且时间复杂度为 O(n)。
+
+以{3,4,5,1,2}为例，可以看到旋转过后，数组其实是分为了两部分，{3,4,5}和{1,2}，并且前边数组的元素都是要大于后边数组的，**并且最小的元素就是这两个数组的分界线，是后一个数组的首个元素。**因此该问题可以通过二分法实现O(logn)复杂度的解法，用两个指针来分别指向数组的第一个和最后一个元素，接着找到数组的中间元素，如果该元素位于第一个数组，则它应该是>=第一个指针指向的元素的，此时，最小元素应该位于该中间元素的后边，因此移动第一个指针到该中间元素。
+
+而如果该中间元素位于后面的数组，则它的应该是<=第二个指针指向的元素，此时最小元素应该位于中间元素的前边，因此移动第二个指针到该中间元素。
+
+按照上边的思路，第一个指针总是指向第一个数组，第二个指针总是指向第二个数组，当他们指向相邻的元素时，第二个指针指向的就是最小的元素。
+
+需要注意两个额外的情况：
+
+- 当把数组的前0个元素移动到后面时的情况，即数组本身也是一个旋转数组，此时第一个数字就是最小的数字，这里需要在初始化中间元素index时，将其初始化为0的原因，如果此时`array[index1] >= array[index2]` 不满足则直接返回第一个元素。
+- index1、index2 和 indexMid 指向的元素相同的情况，例如数组 {0,1,1,1,1}的旋转数组{1,0,1,1,1} 和 {1,1,1,0,1}，这两个数组中，index1、index2 和 indexMid 都为 1，但是在第一个数组中 indexMid 数组后边的子数组，而第二个数组数组中则属于第一个子数组，**这种情况下，只能通过顺序查找。**
+
+```java
+public class Solution {
+    public int minNumberInRotateArray(int [] array) {
+        if (array == null || array.length == 0) return 0;
+        int index1 = 0;
+        int index2 = array.length - 1;
+        int indexMid = index1;
+        while (array[index1] >= array[index2]) {
+            if (index2 - index1 == 1) {
+                indexMid = index2;
+                break;   
+            }
+            indexMid = (index1 + index2) / 2; 
+            //如果第一个指针、中间元素、第二个指针，三个值都相等，则使用顺序查找
+            if (array[index1] == array[indexMid] && array[index2] == array[indexMid]) {
+                return minInOrder(array, index1, index2);
+            }
+            if (array[index1] <= array[indexMid]) {
+                //移动第一个指针到中间元素
+                index1 = indexMid;
+            } else if (array[index2] >= array[indexMid]) {
+                //移动第二个指针到中间元素
+                index2 = indexMid;
+            }
+        }
+        return array[indexMid];
+    }
+    
+    public int minInOrder(int [] array, int index1, int index2){
+        int result = array[index1];
+        for (int i = index1 + 1; i <= index2; i++) {
+            if (result > array[i]) continue;
+            result = array[i];
+        }
+        return result;
+    }
+}
+```
+
+
+
+**考点：**
+
+二分查找
