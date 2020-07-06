@@ -372,3 +372,75 @@ public class Solution {
 **考点：**
 
 二分查找
+
+### [10、矩阵中的路径](https://www.nowcoder.com/practice/c61c6999eecb4b8f88a98f66b273a3cc?tpId=13&&tqId=11218&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+请设计一个函数，用来判断在一个矩阵中是否存在一条包含某字符串所有字符的路径。路径可以从矩阵中的任意一个格子开始，每一步可以在矩阵中向左，向右，向上，向下移动一个格子。如果一条路径经过了矩阵中的某一个格子，则该路径不能再进入该格子。例如下面的 3x4的矩阵中包含一条字符串 "bfce" 的路径(路径中字母已加粗)。但矩阵中不包含字符串"abfb" 的路径，因为字符串的第一个字符b占据了矩阵中的第一行第二个格子之后，路径不能再次进入这个格子。
+
+a	**b**	t 	g
+
+c	**f**	 **c**	 s
+
+j 	d	**e**	 h
+
+**回溯法：**
+
+可以看作是蛮力法的升级，从解决问题的所有可能解法中选择出一个可行方案，非常适合由多个步骤组成，并非每个步骤都有多个选项的问题。
+
+可以用树结构来形象的表示回溯法，在某一步时，该步骤可以看作是一个节点，该步骤的所有选择可以看作是该节点的子节点，因此如果一个叶节点的状态满足题目的约束条件，则可以看作是找到了一个解决方案，而从该节点到根节点的连线，则是该解决方案。而如果一个叶节点不满足条件，那么需要回溯到上一个节点再尝试其他选项，当所有选项都尝试过后，且都不满足时，则再次回溯到上一个节点，如果所有的节点都不满足，则该问题无解。
+
+通常回溯法适合用递归来实现。
+
+**分析：**
+
+该问题是一个典型的可以使用回溯法解决的题目，先在矩阵中选中一个格子作为起点，如果该格子中的字符与所要查找路径上对应位数的字符一致（例如，起点的话，则与路径上的第一个字符一致），则在其上下左右查找下一个字符，如果没有找到，则返回到前一个字符重新查找，该过程即是可以递归的，对于与下面代码中的 `hasPathCore()` 方法，而 `hasPath()` 的作用就是选择路径起点，这里时通过遍历所有的格子。
+
+```java
+public class Solution {
+    private int mPathLength;
+
+    public boolean hasPath(char[] matrix, int rows, int cols, char[] str) {
+        if (matrix == null || matrix.length == 0 || rows <= 0 || cols <= 0
+                || str == null || str.length == 0) {
+            return false;
+        }
+        //需要与矩阵大小一致的布尔数组来保存是否已经进入
+        boolean[] visited = new boolean[rows * cols];
+        for (int row = 0; row <= rows; row++) {
+            for (int col = 0; col <= cols; col++) {
+                if (hasPathCore(matrix, rows, cols, str, row, col, visited)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean hasPathCore(char[] matrix, int rows, int cols, char[] str,
+                                int row, int col, boolean[] visited) {
+        boolean hasNextCharPath = false;
+        //必须首先判断是否已经查找完毕，否则会有越界的异常
+        if (mPathLength == str.length) return true;
+        if (row >= 0 && row < rows && col >= 0 && col < cols
+                && matrix[row * cols + col] == str[mPathLength]
+                && !visited[row * cols + col]) {
+            mPathLength++;
+            visited[row * cols + col] = true;
+            hasNextCharPath = hasPathCore(matrix, rows, cols, str, row - 1, col, visited)
+                    || hasPathCore(matrix, rows, cols, str, row, col - 1, visited)
+                    || hasPathCore(matrix, rows, cols, str, row + 1, col, visited)
+                    || hasPathCore(matrix, rows, cols, str, row, col + 1, visited);
+            if (!hasNextCharPath) {
+                mPathLength--;
+                visited[row * cols + col] = false;
+            }
+        }
+        return hasNextCharPath;
+    }
+}
+```
+
+**考点：**
+
+dfs、回溯
+
