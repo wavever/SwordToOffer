@@ -444,3 +444,52 @@ public class Solution {
 
 dfs、回溯
 
+### [11、机器人的运动范围](https://www.nowcoder.com/practice/6e5207314b5241fb83f2329e89fdecc8?tpId=13&&tqId=11219&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+地上有一个m行和n列的方格。一个机器人从坐标0,0的格子开始移动，每一次只能向左，右，上，下四个方向移动一格，但是不能进入行坐标和列坐标的数位之和大于k的格子。 例如，当k为18时，机器人能够进入方格（35,37），因为3+5+3+7 = 18。但是，它不能进入方格（35,38），因为3+5+3+8 = 19。请问该机器人能够达到多少个格子？
+
+**分析：**
+
+这个问题考察的依旧是回溯法，问题问的是机器人能够达到多少个格子并且是从坐标 (0, 0) 开始的，因此，可以从  (0, 0) 开始从这个点的上下左右开始递归查找，如果满足条件则加1，并且继续递归下一个的上下左右，如果不满足，则返回到这个点为止的格子个数，最后加起来的即是能够达到的。
+
+```java
+public class RobotSport {
+
+    public int movingCount(int threshold, int rows, int cols) {
+        if (threshold <= 0 || rows <= 0 || cols <= 0) return 0;
+        boolean[] visited = new boolean[rows * cols];
+        return movingCountCore(threshold, rows, cols, 0, 0, visited);
+    }
+
+    private int movingCountCore(int threshold, int rows, int cols, int startRow,
+                                int startCol, boolean[] visited) {
+        int count = 0;
+        if (startRow >= 0 && startRow < rows && startCol >= 0 && startCol < cols
+                && getDigitSum(startRow) + getDigitSum(startCol) <= threshold
+                && !visited[startRow * cols + startCol]) {
+            visited[startRow * cols + startCol] = true;
+            count = 1 + movingCountCore(threshold, rows, cols, startRow - 1, startCol, visited)
+                    + movingCountCore(threshold, rows, cols, startRow, startCol - 1, visited)
+                    + movingCountCore(threshold, rows, cols, startRow + 1, startCol, visited)
+                    + movingCountCore(threshold, rows, cols, startRow, startCol + 1, visited);
+        }
+        return count;
+    }
+
+    /**
+     * num=1348, %10=8, /10=134
+     * num=134, %10=4, /10=13
+     * num=13, %10=3, /10=1
+     * num=1, %10=1, /10=0
+     */
+    private int getDigitSum(int num) {
+        int sum = 0;
+        while (num > 0) {
+            sum += num % 10;
+            num /= 10;
+        }
+        return sum;
+    }
+}
+```
+
