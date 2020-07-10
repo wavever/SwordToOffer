@@ -619,3 +619,43 @@ public int NumberOf1(int n) {
     }
 ```
 
+### [14、数值的整数次方](https://www.nowcoder.com/practice/1a834e5e3e1a4b7ba251417554e07c00?tpId=13&&tqId=11165&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+给定一个double类型的浮点数base和int类型的整数exponent。求base的exponent次方。不得使用库函数，同时不需要考虑大数问题。
+
+**分析：**
+
+在数学上 0 的 0 次方没有意义，返回 0 或者 1 都是可以的。当 exponent 为负数时，要对求出的值取倒数，需要考虑除零错误。
+
+当 exponent 为 偶数 16 时，可以看作是在 8 次方的基础上平方，而 8 次方又可以看作是在 4 次方的基础上平方，可以得到公式：a^n = a^(n/2) * a^(n/2)。
+
+而当 exponent 为奇数 17 时，可以看作是在 16 的基础上再乘一次，因为可以得到公式：a^n = a^(n/2) * a^(n/2) * a。
+
+```java
+public class Solution {
+    public double Power(double base, int exponent) {
+        if (base == 0) return 0;
+        int exponentTemp = exponent;
+        if (exponent < 0) {
+            exponentTemp = -exponent;
+        }
+        double result = getPowerResult(base, exponentTemp);
+        if (exponent < 0) {
+            result = 1 / result;
+        }
+        return result;
+  }
+    
+    private double getPowerResult(double base, int exponent){
+        if (exponent == 0) return 1;
+        if (exponent == 1) return base;
+        // 使用右移来实现除二操作
+        double result = getPowerResult(base, exponent >> 1);
+        result *= result;
+        if ((exponent & 1) == 1) // 判断是否为奇数，比取余计算快
+            result *= base;
+        return result;
+    }
+}
+```
+
