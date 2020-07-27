@@ -659,3 +659,101 @@ public class Solution {
 }
 ```
 
+### 15、打印从 1 到 n 最大的 n 位数
+
+输入数字 n，按顺序打印出从 1 到最大的 n 位十进制数。比如输入 3，则打印出 1、2、3 一直到最大的 3 位数 999。
+
+**分析：**
+
+如果使用循环打印数字的方式，那么首先要将 n 转换为对应的数，但这里由于 n 的值不确定，因此无法保证是使用何种类型的变量来保存这个数，如果直接使用 int，可能会造成溢出。
+
+基于以上考虑，该问题可以使用字符串来实现，首先需要考虑如何通过字符串来模拟数字的加法，二是将数字打印出来。
+
+- 模拟数字加法：可以看到 n 位所有的十进制数就是从 0 到 9 排列一遍，因此可以用递归来实现
+- 打印数字：不需要打印出前边的 0
+
+```java
+public class PrintN {
+
+    public void print1ToN(int n) {
+        if (n <= 0) return;
+        char[] numChar = new char[n];
+        for (int i = 0; i < 10; i++) {
+            //例如n=3，默认从 000 开始
+            numChar[0] = (char) (i + '0');
+            //010-090，再递归则为001-009，此时 startIndex 为 2，等于 n -1,则开始打印
+            print1ToNRecursively(numChar, 0);
+        }
+    }
+
+    /**
+     * 递归实现打印
+     * @param numChar 打印的数组
+     * @param startIndex 开始打印的 index
+     */
+    private void print1ToNRecursively(char[] numChar, int startIndex) {
+        //当打印的位数等于长度时开始打印
+        if (startIndex == numChar.length - 1) {
+            printNumber(numChar);
+            System.out.println();
+            return;
+        }
+        //从 0-9 打印每个位数的值，例如 100,101...109
+        for (int i = 0; i < 10; i++) {
+            numChar[startIndex + 1] = (char) (i + '0');
+            print1ToNRecursively(numChar, startIndex + 1);
+        }
+    }
+
+    private void printNumber(char[] numChar) {
+        if (numChar == null || numChar.length == 0) return;
+        boolean isFirstZero = true; //用来过滤开头的0，例如 010，打印为 10 
+        for (char c : numChar) {
+            // 因为默认数组中都是空的，因此需要对比下是否 char 为 0
+            if ((c == '0' && isFirstZero) || c == 0) continue;
+            isFirstZero = false;
+            System.out.print(c); //不采用换行的打印
+        }
+    }
+
+    public static void main(String[] args) {
+        new PrintN().print1ToN(3);
+    }
+}
+
+```
+
+### 16、删除链表的节点
+
+#### 在 O(1) 时间内删除链表节点
+
+给定单向链表的头指针和一个节点指针，定义一个函数在 O(1) 时间内删除该节点。
+
+**分析：**
+
+由于链表的特性，如果查找一个节点，则需要的时间复杂度为 O(n)，本题目需要的时间复杂度为 O(1)，那么可以考虑，将要删除节点的下一个节点的内容复制到删除节点处，然后删除下一个节点，那么就等于删除了节点，需要考虑两种情况，一是删除节点为尾节点，此时仍然是需要从头开始遍历，然后得到它的前序节点后完成删除操作；二是链表中只有一个节点，此时在删除节点后，还需要将链表的头节点置为 null。
+
+**因为时间复杂度的要求，这里是直接认为要删除的节点就是在链表中。**
+
+```java
+    void delete(Node head, Node willDelete) {
+        if (head == null || willDelete == null) return;
+        if (willDelete.next != null) { //删除非尾节点
+            willDelete.value = willDelete.next.value;
+            willDelete.next = willDelete.next.next;
+            willDelete.next.next = null;
+        } else if (head == willDelete) { // 链表只有一个节点
+            head = null;
+        } else {//删除的是链表的尾节点
+            Node node = head;
+            while (node.next != willDelete) {
+                node = node.next;
+            }
+            node.next = null;
+        }
+    }
+```
+
+#### [删除链表中重复的节点](https://www.nowcoder.com/practice/fc533c45b73a41b0b44ccba763f866ef?tpId=13&&tqId=11209&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+在一个排序的链表中，存在重复的结点，请删除该链表中重复的结点，重复的结点不保留，返回链表头指针。 例如，链表1->2->3->3->4->4->5 处理后为 1->2->5
