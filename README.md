@@ -756,4 +756,38 @@ public class PrintN {
 
 #### [删除链表中重复的节点](https://www.nowcoder.com/practice/fc533c45b73a41b0b44ccba763f866ef?tpId=13&&tqId=11209&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
-在一个排序的链表中，存在重复的结点，请删除该链表中重复的结点，重复的结点不保留，返回链表头指针。 例如，链表1->2->3->3->4->4->5 处理后为 1->2->5
+在一个排序的链表中，存在重复的结点，请删除该链表中重复的结点，重复的结点不保留，返回链表头指针。 例如，链表 1->2->3->3->4->4->5 处理后为 1->2->5。
+
+**分析：**
+
+该题目可能存在头节点就是重复节点的情况，判断是否为重复节点即从头开始遍历链表，如果一个节点的值和其下一个节点的值一致，那么就可以删除这两个节点，因此需要保存当前节点的前一个节点，并且要确保该前节点要和下一个没有重复的节点相连。
+
+```java
+public ListNode deleteDuplication(ListNode pHead) {
+        if (pHead == null || pHead.next == null) {
+            return pHead;
+        }
+        ListNode Head = new ListNode();
+        Head.next = pHead;
+        ListNode pre = Head;
+        ListNode last = Head.next;
+        while (last != null) {
+            if (last.next != null && last.val == last.next.val) {
+                // 找到最后的一个相同节点
+                while (last.next != null && last.val == last.next.val) {
+                    last = last.next;
+                }
+                pre.next = last.next;
+                last = last.next;
+            } else {
+                pre = pre.next;
+                last = last.next;
+            }
+        }
+        return Head.next;
+    }
+```
+
+### [17、正则表达式匹配](https://www.nowcoder.com/practice/45327ae22b7b413ea21df13ee7d6429c?tpId=13&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+请实现一个函数用来匹配包括'.'和'*'的正则表达式。模式中的字符'.'表示任意一个字符，而'*'表示它前面的字符可以出现任意次（包含0次）。 在本题中，匹配是指字符串的所有字符匹配整个模式。例如，字符串"aaa"与模式"a.a"和"ab*ac*a"匹配，但是与"aa.a"和"ab*a"均不匹配
