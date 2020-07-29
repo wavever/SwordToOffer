@@ -790,4 +790,62 @@ public ListNode deleteDuplication(ListNode pHead) {
 
 ### [17、正则表达式匹配](https://www.nowcoder.com/practice/45327ae22b7b413ea21df13ee7d6429c?tpId=13&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
 
-请实现一个函数用来匹配包括'.'和'*'的正则表达式。模式中的字符'.'表示任意一个字符，而'*'表示它前面的字符可以出现任意次（包含0次）。 在本题中，匹配是指字符串的所有字符匹配整个模式。例如，字符串"aaa"与模式"a.a"和"ab*ac*a"匹配，但是与"aa.a"和"ab*a"均不匹配
+请实现一个函数用来匹配包括 . 和 * 的正则表达式。模式中的字符 '.' 表示任意一个字符，而 * 表示它前面的字符可以出现任意次（包含0次）。 在本题中，匹配是指字符串的所有字符匹配整个模式。例如，字符串"aaa"与模式"a.a"和"ab* ac* a"匹配，但是与"aa.a"和"ab*a"均不匹配
+
+**分析：**
+
+ 这里 * 是指前一个字符可以出现0次或多次，即 ab*，表示b可以出现0次或多次，需要注意数组越界的问题。
+
+```java
+public class _18_RegularMatch {
+
+    public boolean match(char[] str, char[] pattern) {
+        if (str == null || pattern == null) return false;
+        // 如果字符和表达式均为空数组，则表示匹配
+        if (str.length == 0 && pattern.length == 0) return true;
+        // 如果字符已经没有了，但是表达式还有，则不匹配
+        if (str.length != 0 && pattern.length == 0) return false;
+        return matchCore(str, pattern, 0, 0);
+    }
+
+    public boolean matchCore(char[] str, char[] pattern, int strIndex, int patternIndex) {
+        //如果字符串和模式都检查完，则匹配成功
+        if (str.length == strIndex && pattern.length == patternIndex) return true;
+        //如果字符串还有，但模式已经没有，则匹配失败
+        if (str.length != strIndex && pattern.length == patternIndex) return false;
+        //如果模式的第2位为 *，则需要考虑多种情况
+        if (patternIndex + 1 < pattern.length && pattern[patternIndex + 1] == '*') {
+            //字符串字符和模式中*号前的字符相等，或者模式中*号前是.，即表示任意字符，此时有3种情况
+            if (strIndex != str.length && (str[strIndex] == pattern[patternIndex]
+                    || pattern[patternIndex] == '.')) {
+                //1、*号匹配这个字符，则字符串移动一位，模式移动*号和其前一位共2位
+                return matchCore(str, pattern, strIndex + 1, patternIndex + 2)
+                        //2、*号可以匹配任意多字符，因此这里只移动字符串的下标，去检查字符串的下一个字符
+                        || matchCore(str, pattern, strIndex + 1, patternIndex)
+                        //直接跳过这个*号，和下边的逻辑一样
+                        || matchCore(str, pattern, strIndex, patternIndex + 2);
+            } else {
+                //字符串字符与模式中*号前的字符不想等，此时直接将模式往后移动2位，
+                //因为*号可以匹配0位，等于直接跳过了*和它前一位这个匹配
+                return matchCore(str, pattern, strIndex, patternIndex + 2);
+            }
+        }
+        // 字符如果相等，或者是表达式为.则该位匹配，去检查下一位
+        if (strIndex != str.length && (str[strIndex] == pattern[patternIndex]
+                || pattern[patternIndex] == '.')) {
+            return matchCore(str, pattern, strIndex + 1, patternIndex + 1);
+        }
+        return false;
+    }
+
+    public static void main(String[] args) {
+        char[] str = new char[]{'a', 'a', 'a'};
+        char[] pattern = new char[]{'a', 'b', '.', 'a','c','*','a'};
+        char[] a = new char[]{};
+        char[] b = new char[]{'.'};
+        boolean result = new _18_RegularMatch().match(a, b);
+        System.out.println("result=" + result);
+    }
+}
+```
+
