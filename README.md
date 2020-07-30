@@ -849,3 +849,70 @@ public class _18_RegularMatch {
 }
 ```
 
+### [18、表示数值的字符串]([https://www.nowcoder.com/practice/6f8c901d091949a5837e24bb82a731f2?tpId=13&rp=1&ru=%252Fta%252Fcoding-interviews&qru=%252Fta%252Fcoding-interviews%252Fquestion-ranking](https://www.nowcoder.com/practice/6f8c901d091949a5837e24bb82a731f2?tpId=13&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking))
+
+请实现一个函数用来判断字符串是否表示数值（包括整数和小数）。例如，字符串"+100","5e2","-123","3.1416"和"-1E-16"都表示数值。 但是"12e","1a3.14","1.2.3","+-5"和"12e+4.3"都不是。
+
+**分析：**
+
+表示数字的字符串遵循模式 +-A.BeE+-C：
+
+- A 表示整数部分，它的前边可以有+ 或 -，或者没有
+- B 表示小数部分，跟在 . 的后边
+- C 表示指数部分，跟在 e 或者 E 后边，其也可以有 + - 
+
+```java
+public class _19_StringNum {
+
+    private int mIndex;
+
+    public boolean isNumeric(char[] str) {
+        if (str == null || str.length == 0) return false;
+        // 先检查整数部分
+        boolean result = scanInteger(str);
+        // 检查小数部分
+        if (mIndex < str.length && str[mIndex] == '.') {
+            mIndex++;
+            // 这里用或的原因：小数的结果对整数的结果并不影响：
+            // 小数可以没有整数部分，如 .12 等于 0.12
+            // 小数点后边可以没有数字，如 11. 等于 11.0
+            result = scanUnsignedInteger(str) || result;
+        }
+        // 检查指数部分
+        if (mIndex < str.length && (str[mIndex] == 'e' || str[mIndex] == 'E')) {
+            mIndex++;
+            // 这里用 && 的原因：e后边的结果和前边的结果必须都成立
+            // 指数前边必须有数字，如 e12 不能表示数字
+            // 指数后边必须有数字，如 12e 不能表示数字
+            result = result && scanInteger(str);
+        }
+        // 最后要确保所有的字符都已经检查完毕，这里 mIndex 因为是检查完最后一位后还会++，因此和 length
+        // 来比较
+        return result && mIndex == str.length;
+    }
+
+    public boolean scanInteger(char[] str) {
+        if (mIndex < str.length && (str[mIndex] == '+' || str[mIndex] == '-')) {
+            mIndex++;
+        }
+        return scanUnsignedInteger(str);
+    }
+
+    public boolean scanUnsignedInteger(char[] str) {
+        int indexCache = mIndex;
+        while (mIndex < str.length && str[mIndex] >= '0' && str[mIndex] <= '9') {
+            mIndex++;
+        }
+        return mIndex > indexCache;
+    }
+
+    public static void main(String[] args) {
+        char[] str = {'1', 'a', '3', '.', '2', '3'}; //1a3.23 false
+        char[] str1 = {'1', '1', '1'}; // 111 true
+        char[] str2 = {'1', '1', '.', '4','e','+','9'}; // 11.4e+9 true
+        boolean result = new _19_StringNum().isNumeric(str2);
+        System.out.println("result=" + result);
+    }
+}
+```
+
