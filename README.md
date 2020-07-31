@@ -916,3 +916,39 @@ public class _19_StringNum {
 }
 ```
 
+### [19、调整数组顺序使奇数位于偶数前边](https://www.nowcoder.com/practice/beb5aa231adc45b2a5dcc5b62c93f593?tpId=13&&tqId=11166&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+输入一个整数数组，实现一个函数来调整该数组中数字的顺序，使得所有的奇数位于数组的前半部分，所有的偶数位于数组的后半部分，并保证奇数和奇数，偶数和偶数之间的相对位置不变。
+
+**分析：**
+
+首先看下如何判断一个数为偶数，可以通过取余的方式来判断，也可以通过移位的方式，如下：
+
+```java
+public boolean isEven(int num) {
+  // 偶数右移再左移后不变
+  return (num >> 1) << 1 == num;
+}
+```
+
+第一种方式，通过**空间换时间**的方式，使用一个临时数组，接着遍历两次整数数组，第一次遍历查找奇数，第二次遍历查找偶数，这样可以保证相对位置不变，空间复杂度和时间复杂度都为 O(n)：
+
+```java
+    public void reOrderArray(int [] array) {
+      	if (array == null || array.length == 0) return;
+        int[] tempArray = new int[array.length];
+        int tempArrayIndex = 0;
+        for (int i : array) {
+            if (isEven(i)) continue;
+            tempArray[tempArrayIndex] = i;
+            tempArrayIndex++;
+        }
+        for (int i : array) {
+            if (!isEven(i)) continue;
+            tempArray[tempArrayIndex] = i;
+            tempArrayIndex++;
+        }
+    }
+```
+
+第二种方式时可以采用类似于冒泡法来解决，使用两个指针分别指向数组的开头和结尾，头指针扫描到偶数，尾指针扫描奇数，当扫描到时交换这两个数，但需要考虑位置不变，因此需要多次遍历，时间复杂度为 O(n^2)，这里不做解释了。
