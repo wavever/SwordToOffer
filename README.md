@@ -952,3 +952,65 @@ public boolean isEven(int num) {
 ```
 
 第二种方式时可以采用类似于冒泡法来解决，使用两个指针分别指向数组的开头和结尾，头指针扫描到偶数，尾指针扫描奇数，当扫描到时交换这两个数，但需要考虑位置不变，因此需要多次遍历，时间复杂度为 O(n^2)，这里不做解释了。
+
+### [20、链表中倒数第 k 个节点](https://www.nowcoder.com/practice/529d3ae5a407492994ad2a246518148a?tpId=13&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+输入一个链表，输出该链表中倒数第 k 个节点，这里从1开始奇计数，如链表：123456，倒数第3个节点为6。
+
+**分析：**
+
+只遍历一次链表就能找到倒数第 k 个节点，可以定义两个指针，第一个指针从链表的头指针开始遍历向前走 k 步，第二个指针保持不动，从第 k 步开始，第二个指针开始从头遍历，因为两个指针的距离保持在 k，因此当第一个指针到达尾节点时，第二个指针正好指向倒数第 k 个节点。
+
+```java
+public class _20_FindKthToTail {
+
+    public ListNode FindKthToTail(ListNode head, int k) {
+        if (head == null || k == 0) return null;
+        ListNode aheadNode = head;
+        ListNode beHeadNode = head;
+        for (int i = 0; i < k - 1; i++) {
+            if (aheadNode.next != null) {
+                aheadNode = aheadNode.next;
+            } else {
+                // 如果k的值大于链表的长度，则返回空
+                return null;
+            }
+        }
+        while (aheadNode.next != null) {
+            aheadNode = aheadNode.next;
+            beHeadNode = beHeadNode.next;
+        }
+        return beHeadNode;
+    }
+
+    public static void main(String[] args) {
+        ListNode node1 = new ListNode(1);
+        ListNode node2 = new ListNode(2);
+        ListNode node3 = new ListNode(3);
+        ListNode node4 = new ListNode(4);
+        node1.next = node2;
+        node2.next = node3;
+        node3.next = node4;
+        System.out.println(new _20_FindKthToTail().FindKthToTail(node1, 2).val);
+    }
+}
+```
+
+### [21、链表中环的入口节点](https://www.nowcoder.com/practice/253d2c59ec3e4bc68da16833f79a38e4?tpId=13&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+给一个链表，若其中包含环，请找出该链表的环的入口结点，否则，输出null，例如：
+
+```
+1 -> 2 -> 3 -> 4 -> 2
+```
+
+上面的链表中，2 指向 3，3 指向 4，而 4 又指向了 2 造成了环，则 2 就是环的入口节点。
+
+**分析：**
+
+第一步是如何判断一个链表包含环，可以通过两个指针来实现，一个指针走的快，一个走的慢，如果快的可以追上慢的，那么就包含环，否则不包含。第二步是如何找到环的入口，
+
+```java
+
+```
+
