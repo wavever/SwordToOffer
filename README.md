@@ -1008,9 +1008,181 @@ public class _20_FindKthToTail {
 
 **分析：**
 
-第一步是如何判断一个链表包含环，可以通过两个指针来实现，一个指针走的快，一个走的慢，如果快的可以追上慢的，那么就包含环，否则不包含。第二步是如何找到环的入口，
+第一步是如何判断一个链表包含环，可以通过两个指针来实现，一个指针走的快，一个走的慢，如果快的可以追上慢的，那么就包含环，否则不包含。
+
+第二步是如何找到环的入口，依旧可以用两个指针来解决，假设环的长度为 n ，第一个指针先走 n 步，然后两个指针同时开始走，当两个指针相遇时，这个节点就是环的入口。
 
 ```java
+public class _21_FindCircleStart {
 
+    public ListNode EntryNodeOfLoop(ListNode pHead)
+    {
+        ListNode meetingNode = getMeetingNode(pHead);
+        if (meetingNode == null) return null;
+        int loopLength = 1;
+        ListNode loopNode = meetingNode;
+        //获取环的长度
+        while (loopNode.next != meetingNode){
+            loopNode = loopNode.next;
+            loopLength++;
+        }
+        System.out.println("circle length=" + loopLength);
+        ListNode node1 = pHead;
+        //指针1先走环的长度步
+        for (int i = 0; i < loopLength; i++) {
+            node1 = node1.next;
+        }
+        //指针1和指针2一起开始走，相遇的节点即为入口
+        ListNode node2 = pHead;
+        while (node1 != node2) {
+            node1 = node1.next;
+            node2 = node2.next;
+        }
+        return node1;
+    }
+
+    //寻找环中任意一个节点
+    public ListNode getMeetingNode (ListNode pHead){
+        if (pHead == null) return null;
+        ListNode slowNode = pHead.next;
+        if (slowNode == null) return null;
+        ListNode fastNode = slowNode.next;
+        while (fastNode != null && slowNode != null) {
+            //快指针和慢指针相遇，即该节点为环内节点
+            if (fastNode == slowNode) {
+                return fastNode;
+            }
+            slowNode = slowNode.next;
+            fastNode = fastNode.next;
+            if (fastNode != null) {
+                fastNode = fastNode.next;
+            }
+        }
+        return null;
+    }
+
+    public static void main(String[] args) {
+        ListNode node1 = new ListNode(1);
+        ListNode node2 = new ListNode(2);
+        ListNode node3 = new ListNode(3);
+        ListNode node4 = new ListNode(4);
+        ListNode node5 = new ListNode(5);
+        node1.next = node2;
+        node2.next = node3;
+        node3.next = node4;
+        node4.next = node5;
+        node5.next = node2;
+        System.out.println(new _21_FindCircleStart().EntryNodeOfLoop(node1).val);
+    }
+}public class _21_FindCircleStart {
+
+    public ListNode EntryNodeOfLoop(ListNode pHead)
+    {
+        ListNode meetingNode = getMeetingNode(pHead);
+        if (meetingNode == null) return null;
+        int loopLength = 1;
+        ListNode loopNode = meetingNode;
+        //获取环的长度
+        while (loopNode.next != meetingNode){
+            loopNode = loopNode.next;
+            loopLength++;
+        }
+        System.out.println("circle length=" + loopLength);
+        ListNode node1 = pHead;
+        //指针1先走环的长度步
+        for (int i = 0; i < loopLength; i++) {
+            node1 = node1.next;
+        }
+        //指针1和指针2一起开始走，相遇的节点即为入口
+        ListNode node2 = pHead;
+        while (node1 != node2) {
+            node1 = node1.next;
+            node2 = node2.next;
+        }
+        return node1;
+    }
+
+    //寻找环中任意一个节点
+    public ListNode getMeetingNode (ListNode pHead){
+        if (pHead == null) return null;
+        ListNode slowNode = pHead.next;
+        if (slowNode == null) return null;
+        ListNode fastNode = slowNode.next;
+        while (fastNode != null && slowNode != null) {
+            //快指针和慢指针相遇，即该节点为环内节点
+            if (fastNode == slowNode) {
+                return fastNode;
+            }
+            slowNode = slowNode.next;
+            fastNode = fastNode.next;
+            if (fastNode != null) {
+                fastNode = fastNode.next;
+            }
+        }
+        return null;
+    }
+
+    public static void main(String[] args) {
+        ListNode node1 = new ListNode(1);
+        ListNode node2 = new ListNode(2);
+        ListNode node3 = new ListNode(3);
+        ListNode node4 = new ListNode(4);
+        ListNode node5 = new ListNode(5);
+        node1.next = node2;
+        node2.next = node3;
+        node3.next = node4;
+        node4.next = node5;
+        node5.next = node2;
+        System.out.println(new _21_FindCircleStart().EntryNodeOfLoop(node1).val);
+    }
+}
+```
+
+### [22、反转链表](https://www.nowcoder.com/practice/75e878df47f24fdc9dc3e400ec6058ca?tpId=13&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+输入一个链表，反转链表后，输出新链表的表头。
+
+**分析：**
+
+为了保证反转过程中链表不断开，需要用 3 个节点来分别保存当前节点，其前一个节点和其后一个节点的值。
+
+```java
+public class _22_RevertNode {
+
+    public ListNode ReverseList(ListNode head) {
+        if (head == null) return null;
+        if (head.next == null) return head;
+        ListNode reverseNode = null;
+        //用3个节点分别保存当前节点，它的前一个节点和它后一个节点的值
+        ListNode node = head;
+        ListNode nextNode = null;
+        ListNode preNode = null;
+        while (node != null) {
+            nextNode = node.next;
+            //尾节点的next为null，则为反转后的头节点
+            if (nextNode == null) {
+                reverseNode = node;
+            }
+            //反转节点
+            node.next = preNode;
+            preNode = node;
+            node = nextNode;
+        }
+        return reverseNode;
+    }
+
+    public static void main(String[] args) {
+        ListNode node1 = new ListNode(1);
+        ListNode node2 = new ListNode(2);
+        ListNode node3 = new ListNode(3);
+        ListNode node4 = new ListNode(4);
+        ListNode node5 = new ListNode(5);
+        node1.next = node2;
+        node2.next = node3;
+        node3.next = node4;
+        node4.next = node5;
+        System.out.println(new _22_RevertNode().ReverseList(node1).val);
+    }
+}
 ```
 
