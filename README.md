@@ -6,6 +6,12 @@ Rush! Rush!
 
 ### 概念
 
+#### 代码质量
+
+- 规范性：书写清晰、布局清晰、命名合理
+- 完整性：完成基本功能、考虑边界条件、做好错误处理
+- 鲁棒性：采取防御性编程、处理无效的输入
+
 #### 回溯法
 
 可以看作是蛮力法的升级，从解决问题的所有可能解法中选择出一个可行方案，非常适合由多个步骤组成，并非每个步骤都有多个选项的问题。
@@ -1186,3 +1192,95 @@ public class _22_RevertNode {
 }
 ```
 
+### [23、合并两个排序的链表](https://www.nowcoder.com/practice/d8b6b4358f774294a89de2a6ac4d9337?tpId=13&&tqId=11169&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+输入两个递增的链表，合并这两个链表并使新链表中的节点仍然是递增排序的。例如链表1位：135，链表2为：246，则合并后的链表为：123456。
+
+**分析：**
+
+ 首先从头节点开始合并，比较两个链表的头节点，如上面的例子，这里链表1的头节点1小于链表2的头节点2，因此1作为合并链表后的头节点，接着就比较链表1第二个节点和链表2头节点，这个过程与之前一致，因此这个问题可以通过递归来完成。
+
+```java
+    public ListNode Merge(ListNode list1, ListNode list2) {
+        if (list1 == null) return list2;
+        if (list2 == null) return list1;
+        ListNode headNode;
+        if (list1.val < list2.val) {
+            headNode = list1;
+            headNode.next = Merge(list1.next, list2);
+        } else {
+            headNode = list2;
+            headNode.next = Merge(list1, list2.next);
+        }
+        return headNode;
+    }
+```
+
+### [24、树的子结构](https://www.nowcoder.com/practice/6e196c44c7004d15b1610b9afca8bd88?tpId=13&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+输入两颗二叉树 A 和 B，判断 B 是不是 A 的子结构。
+
+这里以下边的二叉树为例，左边的树A包含右边的树B。
+
+```
+ 	 8							8
+	/ \						 / \
+ 8	 7					9   2 
+/ \
+9  2				
+ 	/ \
+ 4   7
+```
+
+**分析：**
+
+首先从树A的根节点开始遍历，根节点就是8，与树B的根节点相同，接着判断树A根节点的子树和树B根节点的子树是否相同，这里树A根节点的左子节点为8，而树B则为9，不相同。记着依旧遍历树A，判断方法则和之前一样，可以使用递归来实现，第一步是通过HasSubtree来遍历二叉树A，如果发现某个节点与B的头节点相同，则调用doesTree1HasTree2来判断是否A中以该节点为根节点的子树和树B具有相同的结构。
+
+**二叉树中要时刻注意是否节点为空的情况，保证代码的健壮性。**
+
+```java
+class TreeNode {
+    int val = 0;
+    TreeNode left = null;
+    TreeNode right = null;
+
+    public TreeNode(int val) {
+        this.val = val;
+    }
+}
+
+public class _24_IfTree1hasTree2 {
+    
+    public boolean HasSubtree(TreeNode root1, TreeNode root2) {
+        if (root1 == null || root2 == null) return false;
+        boolean result = false;
+        //如果有节点相同，则去递归判断是否包含
+        if (root1.val == root2.val) {
+            result = doesTree1HasTree2(root1, root2);
+        }
+        //如果节点相同但是不包含，则继续检查左子树是否包含
+        if (!result) {
+            result = HasSubtree(root1.left, root2);
+        }
+        //继续检查右子树是否包含
+        if (!result) {
+            result = HasSubtree(root1.right, root2);
+        }
+        return result;
+    }
+
+    public boolean doesTree1HasTree2(TreeNode root1, TreeNode root2) {
+        //如果树2遍历完了，则说明包含
+        if (root2 == null) return true;
+        //如果树1遍历完了，树2还有叶子节点，则说明不包含
+        if (root1 == null) return false;
+        //值不同，不包含
+        if (root1.val != root2.val) {
+            return false;
+        }
+        //继续递归判断左子树和右子树
+        return doesTree1HasTree2(root1.left, root2.left)
+                && doesTree1HasTree2(root1.right, root2.right);
+    }
+}
+```
