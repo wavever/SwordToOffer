@@ -1282,5 +1282,89 @@ public class _24_IfTree1hasTree2 {
         return doesTree1HasTree2(root1.left, root2.left)
                 && doesTree1HasTree2(root1.right, root2.right);
     }
+}s
+```
+
+### [25、二叉树的镜像](https://www.nowcoder.com/practice/564f4c26aa584921bc75623e48ca3011?tpId=13&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+请完成一个函数，输入一颗二叉树，该函数输出它的镜像，例如：
+
+```
+二叉树的镜像定义：源二叉树 
+    	    8
+    	   /  \
+    	  6   10
+    	 / \  / \
+    	5  7 9 11
+    	镜像二叉树
+    	    8
+    	   /  \
+    	  10   6
+    	 / \  / \
+    	11 9 7   5
+```
+
+**分析：**
+
+二叉树的镜像可以看作是左右子树的交换，可以通过递归来完成，前序遍历每个节点，如果遍历到的节点有子节点，则交换它们。
+
+```java
+public class Solution {
+    public void Mirror(TreeNode root) {
+        if (root == null) return;
+        if (root.left == null && root.right == null) return;
+        TreeNode temp = root.left;
+        root.left = root.right;
+        root.right = temp;
+        if (root.left != null) {
+            Mirror(root.left);
+        }
+        if (root.right != null) {
+            Mirror(root.right);
+        }
+    }
 }
 ```
+
+### [26、对称的二叉树](https://www.nowcoder.com/practice/ff05d44dfdb04e1d83bdbdab320efbcb?tpId=13&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+请实现一个函数，用来判断一棵二叉树是不是对称的。注意，如果一个二叉树同此二叉树的镜像是同样的，定义其为对称的。
+
+**分析：**
+
+ 要判断一颗二叉树是否是镜像，即是判断前序遍历的结果，和从右节点开始的前序遍历结果是否相等。
+
+```java
+public class Solution {
+    boolean isSymmetrical(TreeNode pRoot)
+    {
+        return isSymmetricalCore(pRoot, pRoot);
+    }
+    
+    boolean isSymmetricalCore(TreeNode pRoot1, TreeNode pRoot2) {
+        if (pRoot1 == null && pRoot2 == null) return true;
+        if (pRoot1 == null || pRoot2 == null) return false;
+        if (pRoot1.val != pRoot2.val) return false;
+        // 比较两个二叉树的左右子树是否相等
+        return isSymmetricalCore(pRoot1.left, pRoot2.right) 
+            && isSymmetricalCore(pRoot1.right, pRoot2.left);
+    }
+}
+```
+
+### [27、顺时针打印矩阵](https://www.nowcoder.com/practice/9b4c81a02cd34f76be2659fa0d54342a?tpId=13&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+输入一个矩阵，按照从外向里以顺时针的顺序依次打印出每一个数字，例如，如果输入如下4 X 4矩阵：
+
+```
+1	 2  3  4
+5  6  7  8
+9  10 11 12
+13 14 15 16
+```
+
+一次打印出来1，2，3，4，8，12，16，15，14，13，9，5，6，7，11，10。
+
+**分析：**
+
+ 
