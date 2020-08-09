@@ -1367,4 +1367,53 @@ public class Solution {
 
 **分析：**
 
- 
+ 首先需要考虑循环打印的条件，可以发现 5x5 的矩阵最后一圈只有一个数字，对于的坐标为 (2,2)，这里 5>2x2，而对于 6x6 的矩阵而言，最后一圈有4个数字，其左上角坐标仍然为 (2,2)，6>2x2 依旧成立，因此循环的条件是 col > startX * 2 并且 row > startY * 2。
+
+每次打印一圈的时候，可以分为4个步骤：从左到右，从上到下，从右到左，从下到上。这里需要考虑下特殊情况，例如只有一行、一列或是一个数字的情况。从左到右总是需要的，而当终止行号大于起始行号时，才需要从上到下；从右到左则需要至少有两行两列，即终止行号和列好都要大于起始行号和列号；从下到上则是需要至少三行两列，即终止行号比起始行号至少大于2，同时终止列号大于起始列号。
+
+```java
+public class Solution {
+    public ArrayList<Integer> printMatrix(int [][] matrix) {
+        if (matrix == null ) return null;
+        int rows = matrix.length;
+        if (rows <= 0) return null;
+        int columns = matrix[0].length;
+        if (columns <= 0) return null;
+        ArrayList<Integer> list = new ArrayList<>();
+        int start = 0;
+        while (rows > 2 * start && columns > 2 * start) {
+            int endX = columns - 1 - start;
+            int endY = rows - 1 - start;
+            //从左到右打印
+            for (int i = start; i <= endX; i++) {
+                list.add(matrix[start][i]);
+            }
+            //必须终止行号大于起始行号，才会从上到下打印
+            if (endY > start) { 
+                for (int i = start + 1; i <= endY; i++) {
+                    list.add(matrix[i][endX]);
+                } 
+            }
+            //至少有两行两列，即终止行号和列好都要大于起始行号和列号，才会
+            //从右到左打印
+            if (endX > start && endY > start) {
+                for (int i = endX -1; i >= start; i--) {
+                    list.add(matrix[endY][i]);
+                }
+            }
+            //需要至少三行两列，即终止行号比起始行号至少大于2，
+            //才会从下到上打印
+            if (endX > start && endY - 1> start) {
+                for (int i = endY -1; i >= start + 1; i--) {
+                   list.add(matrix[i][start]); 
+                }
+            }
+            start++;
+        }
+        return list;
+    }
+}
+```
+
+### [28、包含 min 函数的栈](https://www.nowcoder.com/practice/4c776177d2c04c2494f2555c9fcc1e49?tpId=13&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
