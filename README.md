@@ -1417,3 +1417,38 @@ public class Solution {
 
 ### [28、包含 min 函数的栈](https://www.nowcoder.com/practice/4c776177d2c04c2494f2555c9fcc1e49?tpId=13&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
 
+定义栈的数据结构，请在该类型中实现一个能够得到栈中所含最小元素的 min 函数。在该栈中，调用 min、push 及 pop 的时间复杂度应都为O(1)。
+
+**分析：**
+
+这个问题的意思是 min 函数的实现是使用栈内部的 push 和 pop 函数来实现。这里采用辅助空间的算法，通过一个辅助栈来保存每次 push 时的最小值，然后 min 函数中直接对这个弹出这个辅助栈元素即可。
+
+```java
+public class Solution {
+
+    private Stack<Integer> mDataStack = new Stack();
+    private Stack<Integer> mMinStack = new Stack();
+    
+    public void push(int node) {
+        mDataStack.push(node);
+        if (mMinStack.isEmpty() || min() > node) {
+            // 此时辅助栈为空或者是顶部的值小于要push的值，更新
+            mMinStack.push(node);
+        } else {
+            // 此时最小值并没有变，还是需要push，即每次push都需要有对应的最小值
+            mMinStack.push(min());
+        }
+    }
+    
+    public void pop() {
+        mDataStack.pop();
+        mMinStack.pop();
+    }
+    
+    public int min() {
+        return mMinStack.peek();
+    }
+}
+```
+
+### [29、栈的压入、弹出序列]()
