@@ -2,6 +2,8 @@
 
 Rush! Rush!
 
+PDF ：https://pan.baidu.com/s/1g-JzhQBGcTpwphzrN5blFw 提取码：ysth 
+
 [TOC]
 
 ### 概念
@@ -1080,67 +1082,6 @@ public class _21_FindCircleStart {
         node5.next = node2;
         System.out.println(new _21_FindCircleStart().EntryNodeOfLoop(node1).val);
     }
-}public class _21_FindCircleStart {
-
-    public ListNode EntryNodeOfLoop(ListNode pHead)
-    {
-        ListNode meetingNode = getMeetingNode(pHead);
-        if (meetingNode == null) return null;
-        int loopLength = 1;
-        ListNode loopNode = meetingNode;
-        //获取环的长度
-        while (loopNode.next != meetingNode){
-            loopNode = loopNode.next;
-            loopLength++;
-        }
-        System.out.println("circle length=" + loopLength);
-        ListNode node1 = pHead;
-        //指针1先走环的长度步
-        for (int i = 0; i < loopLength; i++) {
-            node1 = node1.next;
-        }
-        //指针1和指针2一起开始走，相遇的节点即为入口
-        ListNode node2 = pHead;
-        while (node1 != node2) {
-            node1 = node1.next;
-            node2 = node2.next;
-        }
-        return node1;
-    }
-
-    //寻找环中任意一个节点
-    public ListNode getMeetingNode (ListNode pHead){
-        if (pHead == null) return null;
-        ListNode slowNode = pHead.next;
-        if (slowNode == null) return null;
-        ListNode fastNode = slowNode.next;
-        while (fastNode != null && slowNode != null) {
-            //快指针和慢指针相遇，即该节点为环内节点
-            if (fastNode == slowNode) {
-                return fastNode;
-            }
-            slowNode = slowNode.next;
-            fastNode = fastNode.next;
-            if (fastNode != null) {
-                fastNode = fastNode.next;
-            }
-        }
-        return null;
-    }
-
-    public static void main(String[] args) {
-        ListNode node1 = new ListNode(1);
-        ListNode node2 = new ListNode(2);
-        ListNode node3 = new ListNode(3);
-        ListNode node4 = new ListNode(4);
-        ListNode node5 = new ListNode(5);
-        node1.next = node2;
-        node2.next = node3;
-        node3.next = node4;
-        node4.next = node5;
-        node5.next = node2;
-        System.out.println(new _21_FindCircleStart().EntryNodeOfLoop(node1).val);
-    }
 }
 ```
 
@@ -1223,13 +1164,13 @@ public class _22_RevertNode {
 这里以下边的二叉树为例，左边的树A包含右边的树B。
 
 ```
- 	 8							8
+ 	 8						  8
 	/ \						 / \
- 8	 7					9   2 
-/ \
-9  2				
+   8   7				    9   2 
+  / \
+ 9   2				
  	/ \
- 4   7
+   4   7
 ```
 
 **分析：**
@@ -1357,7 +1298,7 @@ public class Solution {
 输入一个矩阵，按照从外向里以顺时针的顺序依次打印出每一个数字，例如，如果输入如下4 X 4矩阵：
 
 ```
-1	 2  3  4
+1  2  3  4
 5  6  7  8
 9  10 11 12
 13 14 15 16
