@@ -1392,7 +1392,7 @@ public class Solution {
 }
 ```
 
-### [29、栈的压入、弹出序列]()
+### [29、栈的压入、弹出序列](https://www.nowcoder.com/practice/d77d11405cc7470d82554cb392585106?tpId=13&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
 
 输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否可能为该栈的弹出顺序。假设压入栈的所有数字均不相等。例如序列1,2,3,4,5是某栈的压入顺序，序列4,5,3,2,1是该压栈序列对应的一个弹出序列，但4,3,5,1,2就不可能是该压栈序列的弹出序列。
 
@@ -1424,3 +1424,66 @@ public class Solution {
         return s.empty();
     }
 ```
+
+### [30、从上到下打印二叉树](https://www.nowcoder.com/practice/7fe2212963db4790b57431d9ed259701?tpId=13&&tqId=11175&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+```
+ 	8
+   / \
+  6  10
+ / \ / \
+5  7 9 11
+```
+
+#### 题目一：不分行从上到下打印二叉树
+
+从上往下打印出二叉树的每个节点，同层节点从左至右打印，以上边的二叉树为例，打印结果为：8,6,10,5,7,9,11。
+
+**考查：**
+
+树的遍历、队列
+
+**分析：**
+
+通过分析发现在打印完8后，需要打印6和10，因此需要将6和10先进行保存，接着打印6时，需要保存5和7，此时保存的数就有10、5和7，然后打印10，可以发现时先入先出的一种数据结构即队列。因此规律就是每次打印节点时，如果有子节点则将字节点入队，然后继续打印队列头节点，重复该操作即可。
+
+```java
+public class Solution {
+    public ArrayList<Integer> PrintFromTopToBottom(TreeNode root) {
+        ArrayList<Integer> result = new ArrayList<>();
+        //如果树为空，则返回空列表
+        if (root == null) return result;
+        //使用一个队列来保存树的节点
+        LinkedList<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        TreeNode frontNode;
+        while(!queue.isEmpty()) {
+            frontNode = queue.pop();
+            result.add(frontNode.val);
+            //先保存左节点
+            if (frontNode.left != null) {
+                queue.offer(frontNode.left);
+            }
+            //再保存右节点
+            if (frontNode.right != null) {
+                queue.offer(frontNode.right);
+            }
+        }
+        return result;
+    }
+}
+```
+
+#### 题目二：分行从上到下打印二叉树
+
+从上往下打印出二叉树的每个节点，同层节点从左至右打印，以上边的二叉树为例，打印结果为：
+
+8
+
+6 10 
+
+5 7 9 11
+
+#### 题目三：之字形打印二叉树
+
+请实现一个函数
