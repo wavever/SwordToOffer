@@ -1425,7 +1425,7 @@ public class Solution {
     }
 ```
 
-### [30、从上到下打印二叉树](https://www.nowcoder.com/practice/7fe2212963db4790b57431d9ed259701?tpId=13&&tqId=11175&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+### 30、从上到下打印二叉树
 
 ```
  	8
@@ -1435,7 +1435,7 @@ public class Solution {
 5  7 9 11
 ```
 
-#### 题目一：不分行从上到下打印二叉树
+#### [题目一：不分行从上到下打印二叉树](https://www.nowcoder.com/practice/7fe2212963db4790b57431d9ed259701?tpId=13&&tqId=11175&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
 从上往下打印出二叉树的每个节点，同层节点从左至右打印，以上边的二叉树为例，打印结果为：8,6,10,5,7,9,11。
 
@@ -1474,7 +1474,7 @@ public class Solution {
 }
 ```
 
-#### 题目二：分行从上到下打印二叉树
+#### [题目二：分行从上到下打印二叉树](https://www.nowcoder.com/practice/445c44d982d04483b04a54f298796288?tpId=13&&tqId=11213&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
 从上往下打印出二叉树的每个节点，同层节点从左至右打印，以上边的二叉树为例，打印结果为：
 
@@ -1484,6 +1484,66 @@ public class Solution {
 
 5 7 9 11
 
-#### 题目三：之字形打印二叉树
+**分析：**
 
-请实现一个函数
+本题目与前一题目类似，为了使二叉树同层节点从左到右打印，需要两个变量：一个表示当前层还未打印节点的个数；另一个表示下一层节点的数目。
+
+```java
+public class Solution {
+    ArrayList<ArrayList<Integer>> Print(TreeNode pRoot) {
+        ArrayList<ArrayList<Integer>> treeList = new ArrayList<>();
+        if (pRoot == null) return treeList;
+        //每一层需要打印的节点
+        ArrayList<Integer> floorList = new ArrayList<>();
+        LinkedList<TreeNode> queue = new LinkedList<>();
+        queue.add(pRoot);
+        TreeNode frontNode;
+        int waitPrintCount = 1; //本层等待打印的个数，默认为根节点1个
+        int nextFloorCount = 0; //下一层需要打印节点的个数
+        while(!queue.isEmpty()) {
+             frontNode = queue.pop();
+            //先保存左节点
+            if (frontNode.left != null) {
+                queue.offer(frontNode.left);
+                nextFloorCount++;
+            }
+            //再保存右节点
+            if (frontNode.right != null) {
+                queue.offer(frontNode.right);
+                nextFloorCount++;
+            }
+            // 这里由于需要在waitPrintCount为0后，将nextFloorCount的值
+            //赋给waitPrintCount，因此需要先遍历节点再出队
+            floorList.add(frontNode.val);
+            waitPrintCount--;
+            if (waitPrintCount == 0) {
+                ArrayList<Integer> tempList = new ArrayList<>();
+                tempList.addAll(floorList);
+                treeList.add(tempList);
+                floorList.clear();
+                //这里需要去打印下一行了
+                waitPrintCount = nextFloorCount;
+                nextFloorCount = 0;
+            }
+        }
+        return treeList;
+    }
+}
+```
+
+#### [题目三：之字形打印二叉树](https://www.nowcoder.com/practice/91b69814117f4e8097390d107d2efbe0?tpId=13&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+请实现一个函数按照之字形打印二叉树，即第一行按照从左到右的顺序打印，第二层按照从右至左的顺序打印，第三行按照从左到右的顺序打印，其他行以此类推，以上边的二叉树为例，打印结果为：
+
+8
+
+10, 6
+
+5, 7, 9, 11
+
+**分析：**
+
+```java
+
+```
+
