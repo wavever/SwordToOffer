@@ -1480,7 +1480,7 @@ public class Solution {
 
 8
 
-6 10 
+10 6 
 
 5 7 9 11
 
@@ -1543,7 +1543,97 @@ public class Solution {
 
 **分析：**
 
-```java
+需要使用两个辅助栈来分别保存奇数层和偶数层的节点。
 
+```java
+import java.util.ArrayList;
+import java.util.Stack;
+
+class TreeNode {
+    int val = 0;
+    TreeNode left = null;
+    TreeNode right = null;
+
+    public TreeNode(int val) {
+        this.val = val;
+    }
+}
+
+public class Solution {
+    public ArrayList<ArrayList<Integer>> Print(TreeNode pRoot) {
+        ArrayList<ArrayList<Integer>> result = new ArrayList<>();
+        if (pRoot == null) return result;
+        //二叉树的层数，默认从1开始
+        int floor = 1;
+        //用于保存奇数层节点的栈
+        Stack<TreeNode> oddFloorStack = new Stack<>();
+        oddFloorStack.add(pRoot);
+        //用于保存偶数层节点的栈
+        Stack<TreeNode> evenFloorStack = new Stack<>();
+        TreeNode printNode = null;
+        while (!oddFloorStack.isEmpty() || !evenFloorStack.isEmpty()) {
+            //保存每一层的节点值
+            ArrayList<Integer> floorList = new ArrayList<>();
+            if (floor % 2 == 1) { //奇数层，下一层为偶数层，是从右向左打印，因此是从左到右入栈，先保存左节点
+                while (!oddFloorStack.isEmpty()) {
+                    printNode = oddFloorStack.pop();
+                    if (printNode.left != null) {
+                        evenFloorStack.push(printNode.left);
+                    }
+                    if (printNode.right != null) {
+                        evenFloorStack.push(printNode.right);
+                    }
+                    floorList.add(printNode.val);
+                }
+            } else {//偶数层，下一层为奇数层，是从左到右打印，因此是从右到左入栈，先保存右节点
+                while (!evenFloorStack.isEmpty()) {
+                    printNode = evenFloorStack.pop();
+                    if (printNode.right != null) {
+                        oddFloorStack.push(printNode.right);
+                    }
+                    if (printNode.left != null) {
+                        oddFloorStack.push(printNode.left);
+                    }
+                    floorList.add(printNode.val);
+                }
+            }
+            //一层遍历完成，将这层节点的值保存
+            result.add(floorList);
+            System.out.println();
+            floor++;
+        }
+        return result;
+    }
+
+    public static void main(String[] args) {
+        TreeNode root = new TreeNode(8);
+        TreeNode node1 = new TreeNode(6);
+        TreeNode node2 = new TreeNode(10);
+        TreeNode node3 = new TreeNode(5);
+        TreeNode node4 = new TreeNode(7);
+        TreeNode node5 = new TreeNode(9);
+        TreeNode node6 = new TreeNode(11);
+        root.left = node1;
+        root.right = node2;
+        node1.left = node3;
+        node1.right = node4;
+        node2.left = node5;
+        node2.right = node6;
+        new Solution().Print(root);
+    }
+}
 ```
 
+### [31、二叉搜索树的后序遍历序列](https://www.nowcoder.com/practice/a861533d45854474ac791d90e447bafd?tpId=13&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历的结果。如果是则返回true,否则返回false。假设输入的数组的任意两个数字都互不相同。
+
+```
+ 	8
+   / \
+  6  10
+ / \ / \
+5  7 9 11
+```
+
+例如输入 [5, 7, 6, 9, 11, 10, 8] 就是上边二叉树的后序遍历
