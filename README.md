@@ -1626,14 +1626,74 @@ public class Solution {
 
 ### [31、二叉搜索树的后序遍历序列](https://www.nowcoder.com/practice/a861533d45854474ac791d90e447bafd?tpId=13&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
 
-输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历的结果。如果是则返回true,否则返回false。假设输入的数组的任意两个数字都互不相同。
+输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历的结果。如果是则返回true,否则返回false。假设输入的数组的任意两个数字都互不相同。**左节点小于根节点，根节点小于右节点。**
 
 ```
- 	8
+ 	  8
    / \
   6  10
  / \ / \
 5  7 9 11
 ```
 
-例如输入 [5, 7, 6, 9, 11, 10, 8] 就是上边二叉树的后序遍历
+例如输入 [5, 7, 6, 9, 11, 10, 8] 就是上边二叉树的后序遍历，而数组 [7, 4, 6, 5] 不是。
+
+**分析：**
+
+后序遍历结果的最后一个数字就是根节点的值，而比它小的都是左子树节点，比它大的都是右子树。数组 [7, 4, 6, 5] 中，根节点的值为5，此时最前边的7比它大，因此根节点没有左子树，因此 [7, 4, 6] 都是右子树的值，但右子树中的值应该都比根节点大，而4比5小，因此[7, 4, 6, 5] 不是后序遍历序列。
+
+```java
+public class SwordToOffer31 {
+
+    public boolean verifySquenceOfBST(int[] sequence) {
+        if (sequence == null || sequence.length == 0) return false;
+        return verifySquenceOfBSTCore(sequence, 0, sequence.length - 1);
+    }
+
+    private boolean verifySquenceOfBSTCore(int[] sequence, int start, int end) {
+        //如果只有一个节点，那么就无需继续递归
+        if (start == end) return true;
+        int root = sequence[end];
+        //右子树下标，默认要为-1，因为需要判断第一个就满足的情况
+        int rightChildIndex = -1;
+        //获取右子树起始的下标
+        for (int i = start; i <= end; i++) {
+            if (sequence[i] > root) {
+                rightChildIndex = i; //1
+                break;
+            }
+        }
+        //没有右子树，继续遍历左子树，start不变，end为减去根节点，即end-1
+        if (rightChildIndex == -1) {
+            return verifySquenceOfBSTCore(sequence, start, end - 1);
+        }
+        //如果右子树中有比根节点小的值，则不存在
+        for (int i = rightChildIndex; i < end; i++) {
+            if (sequence[i] < root) return false;
+        }
+        //递归判断左子树是否满足
+        boolean leftChildResult = true;
+        if (rightChildIndex > start) {
+            //start是左子树起点，end是右子树前一个
+            leftChildResult = verifySquenceOfBSTCore(sequence, start, rightChildIndex - 1);
+        }
+        //递归判断右子树是否满足
+        boolean rightChildResult = true;
+        if (rightChildIndex < end) {
+            //start是右子树起始节点，end根节点前一个，因此要-1
+            rightChildResult = verifySquenceOfBSTCore(sequence, rightChildIndex, end - 1);
+        }
+        return leftChildResult && rightChildResult;
+    }
+
+    public static void main(String[] args) {
+        boolean result1 = new SwordToOffer31().verifySquenceOfBST(new int[]{5, 7, 6, 9, 11, 10, 8});//true
+        boolean result2 = new SwordToOffer31().verifySquenceOfBST(new int[]{4, 6, 7, 5});//true
+        boolean result3 = new SwordToOffer31().verifySquenceOfBST(new int[]{7, 4, 6, 5});//false
+
+        System.out.println("result=" + result3);
+    }
+}
+
+```
+
