@@ -1690,10 +1690,62 @@ public class SwordToOffer31 {
         boolean result1 = new SwordToOffer31().verifySquenceOfBST(new int[]{5, 7, 6, 9, 11, 10, 8});//true
         boolean result2 = new SwordToOffer31().verifySquenceOfBST(new int[]{4, 6, 7, 5});//true
         boolean result3 = new SwordToOffer31().verifySquenceOfBST(new int[]{7, 4, 6, 5});//false
-
         System.out.println("result=" + result3);
     }
 }
+```
 
+### [32、二叉树中和为某一值的路径](https://www.nowcoder.com/practice/b736e784e3e34731af99065031301bca?tpId=13&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+输入一颗二叉树的根节点和一个整数，按字典序打印出二叉树中结点值的和为输入整数的所有路径。路径定义为从树的根结点开始往下一直到叶结点所经过的结点形成一条路径。
+
+```
+	  10
+   /  \
+  5   12
+ / \ 
+4   7 
+```
+
+以上边的树为例，当整数为22时，满足条件的路径有：[10, 5, 7] 和 [10, 12]。
+
+**分析：**
+
+这里通过二叉树前序遍历的方式来对树进行遍历，当检查完一条路径后则返回到上一个节点继续检查其另一个字节点的路径。
+
+```java
+public class Solution {
+    private ArrayList<ArrayList<Integer>> mPathList = new ArrayList<>();
+    private ArrayList<Integer> mTempList = new ArrayList<>();
+    
+    public ArrayList<ArrayList<Integer>> FindPath(TreeNode root,int target) {
+        if (root == null) return mPathList;
+        mPathList.clear();
+        mTempList.clear();
+        findPathCore(root, 0, target);
+        return mPathList;
+    }
+    
+    public void findPathCore(TreeNode root, int currentSum, int target) {
+        currentSum += root.val;
+        mTempList.add(root.val);
+        //当前节点没有子节点，并且值满足条件
+        if (currentSum == target && root.left == null && root.right == null) {
+            ArrayList<Integer> pathList = new ArrayList<>(mTempList.size()); 
+            pathList.addAll(mTempList);
+            mPathList.add(pathList);
+        }
+        //遍历左节点
+        if (root.left != null) {
+            findPathCore(root.left, currentSum, target);
+        }
+        //遍历右节点
+        if (root.right != null) {
+            findPathCore(root.right, currentSum, target);
+        }
+        //删除这个节点的值，即最后一个值
+        mTempList.remove(mTempList.size() - 1);
+    }
+}
 ```
 
