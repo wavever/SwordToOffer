@@ -1700,7 +1700,7 @@ public class SwordToOffer31 {
 输入一颗二叉树的根节点和一个整数，按字典序打印出二叉树中结点值的和为输入整数的所有路径。路径定义为从树的根结点开始往下一直到叶结点所经过的结点形成一条路径。
 
 ```
-	  10
+	10
    /  \
   5   12
  / \ 
@@ -1745,6 +1745,97 @@ public class Solution {
         }
         //删除这个节点的值，即最后一个值
         mTempList.remove(mTempList.size() - 1);
+    }
+}
+```
+
+### [33、复杂链表的复制](https://www.nowcoder.com/practice/f836b2c43afc4b35ad6adc41ec941dba?tpId=13&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+输入一个复杂链表（每个节点中有节点值，以及两个指针，一个指向下一个节点，另一个特殊指针random 指向一个随机节点），请对此链表进行深拷贝，并返回拷贝后的头结点。（注意，输出结果中请不要返回参数中的节点引用，否则判题程序会直接返回空）
+
+![dB6fiR.png](https://s1.ax1x.com/2020/08/24/dB6fiR.png)
+
+**分析：**
+
+将复制过程分解为 3 个步骤，同时每个步骤用图形化的方式表示出来，有助于理清思路。
+
+第一步：根据原生链表的每个节点 A 创建对应的 A'，并将 A' 链接在 A 的后面，经过这一步后链表的结构如下：
+
+![dB64Rx.png](https://s1.ax1x.com/2020/08/24/dB64Rx.png)
+
+第二步：给复制后的节点设置 random 指针。如图2所示，A 的 random 指向 C，那么 C' 就是 C 的 next 指针指向的节点，根据这个关系，可以对复制后的节点设置 random 指针，如下：
+
+[![dBcSQf.png](https://s1.ax1x.com/2020/08/24/dBcSQf.png)](https://imgchr.com/i/dBcSQf)
+
+第三步：将这个长链表拆分为两个链表，奇数位置的节点组成原始链表，偶数位置的链表组成复制后的链表。
+
+```java
+class RandomListNode {
+    int label;
+    RandomListNode next = null;
+    RandomListNode random = null;
+
+    RandomListNode(int label) {
+        this.label = label;
+    }
+}
+
+public class Solution {
+    public RandomListNode clone(RandomListNode pHead) {
+        if (pHead == null) return null;
+        //1、根据原生链表的每个节点 A 创建对应的 A'，并将 A' 链接在 A 的后面
+        RandomListNode currentNode = pHead;
+        while (currentNode != null) {
+            RandomListNode cloneNode = new RandomListNode(currentNode.label);
+            RandomListNode nextNode = currentNode.next;
+            currentNode.next = cloneNode;
+            cloneNode.next = nextNode;
+            currentNode = nextNode;
+        }
+        //2、给复制后的节点设置 random 指针
+        currentNode = pHead;
+        while (currentNode != null) {
+            //设置 A' 的 random
+            currentNode.next.random = currentNode.random != null ? currentNode.random.next : null;
+            //继续判断 B
+            currentNode = currentNode.next.next;
+        }
+        //3、拆分链表
+        currentNode = pHead;
+        //默认赋值后的链表头为第二个节点
+        RandomListNode cloneHead = pHead.next;
+        while (currentNode != null) {
+            RandomListNode cloneNode = currentNode.next;
+            currentNode.next = cloneNode.next;
+            //修改复制节点的next为下一个复制节点
+            cloneNode.next = cloneNode.next != null ? cloneNode.next.next : null;
+            currentNode = currentNode.next;
+        }
+        return cloneHead;
+    }
+
+    public static void main(String[] args) {
+        RandomListNode a = new RandomListNode(1);
+        RandomListNode b = new RandomListNode(2);
+        RandomListNode c = new RandomListNode(3);
+        RandomListNode d = new RandomListNode(4);
+        RandomListNode e = new RandomListNode(5);
+        a.next = b;
+        a.random = c;
+        b.next = c;
+        b.random = e;
+        c.next = d;
+        d.next = e;
+        d.random = b;
+        RandomListNode clone = new Solution().Clone(a);
+        show(clone);
+    }
+
+    private static void show(RandomListNode head) {
+        while (head != null) {
+            System.out.print(head.label);
+            head = head.next;
+        }
     }
 }
 ```
