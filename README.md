@@ -1840,3 +1840,57 @@ public class Solution {
 }
 ```
 
+### [34、二叉搜索树与双向链表](https://www.nowcoder.com/practice/947f6eb80d944a84850b0538bf0ec3a5?tpId=13&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的双向链表。要求不能创建任何新的结点，只能调整树中结点指针的指向，如下图，左边为二叉搜索树，右边为转换后的排序双向链表。
+
+![dyXUHO.png](https://s1.ax1x.com/2020/08/25/dyXUHO.png)
+
+**分析：**
+
+二叉搜索树是一种排序的数据结构，左节点<根节点<右节点。中序遍历是按照从小到大的顺序遍历二叉树
+
+```java
+/**
+public class TreeNode {
+    int val = 0;
+    TreeNode left = null;
+    TreeNode right = null;
+
+    public TreeNode(int val) {
+        this.val = val;
+
+    }
+}
+*/
+public class Solution {
+    
+    //指向双向链表的尾节点
+    public TreeNode lastNode;
+    
+    public TreeNode Convert(TreeNode pRootOfTree) {
+        if (pRootOfTree == null) return null;
+        if(pRootOfTree.left == null && pRootOfTree.right==null){
+            lastNode = pRootOfTree;// 最后的一个节点可能为最右侧的叶节点
+            return pRootOfTree;
+        }
+        // 1.将左子树构造成双链表，并返回链表头节点
+        TreeNode left = Convert(pRootOfTree.left);
+        // 3.如果左子树链表不为空的话，将当前root追加到左子树链表
+        if(left!=null){
+            lastNode.right = pRootOfTree;
+            pRootOfTree.left = lastNode;
+        }
+        lastNode = pRootOfTree;// 当根节点只含左子树时，则该根节点为最后一个节点
+        // 4.将右子树构造成双链表，并返回链表头节点
+        TreeNode right = Convert(pRootOfTree.right);
+        // 5.如果右子树链表不为空的话，将该链表追加到root节点之后
+        if(right!=null){
+            right.left = pRootOfTree;
+            pRootOfTree.right = right;
+        }
+        return left != null ? left : pRootOfTree; 
+    }
+}
+```
+
