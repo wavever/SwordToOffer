@@ -24,7 +24,7 @@ PDF ：https://pan.baidu.com/s/1g-JzhQBGcTpwphzrN5blFw 提取码：ysth
 
 #### 动态规划
 
-如果一个问题满足以下两种情况，那么久可以使用动态规划来解决：
+如果一个问题满足以下两种情况，那么就可以使用动态规划来解决：
 
 - 求最优解，一般为最大值或最小值
 - 该问题可以分解为若干个子问题，并且子问题之间还有重叠的更小的问题，分解后的每个子问题也存在最优解
@@ -1848,7 +1848,9 @@ public class Solution {
 
 **分析：**
 
-二叉搜索树是一种排序的数据结构，左节点<根节点<右节点。中序遍历是按照从小到大的顺序遍历二叉树
+二叉搜索树是一种排序的数据结构，左节点<根节点<右节点。中序遍历是按照从小到大的顺序遍历二叉树，因此可以通过中序遍历来完成排序，当遍历到根节点时，将树看作3部分：根节点，左子树和右子树，这里需要将根节点和左子树最大的节点连接起来，和右子树最小的节点连接起来。
+
+当遍历到根节点时，左子树已经是转换好的排序链表，并且此时链表最后一个节点就是当前最大值（例如上图中的节点8），此时把该节点和根节点连接起来，再去遍历右子树，并把右子树中最小的和根节点连接。
 
 ```java
 /**
@@ -1859,7 +1861,6 @@ public class TreeNode {
 
     public TreeNode(int val) {
         this.val = val;
-
     }
 }
 */
@@ -1893,4 +1894,183 @@ public class Solution {
     }
 }
 ```
+
+### [35、序列化二叉树](https://www.nowcoder.com/practice/cf7e25aa97c04cc1a68c8f040e71fb84?tpId=13&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+请实现两个函数，分别用来序列化和反序列化二叉树
+
+- 二叉树序列化：把一棵二叉树按照某种遍历方式的结果以某种格式保存为字符串，从而使得内存中建立起来的二叉树可以持久保存。序列化可以基于先序、中序、后序、层序的二叉树遍历方式来进行修改，序列化的结果是一个字符串，序列化时通过某种符号表示空节点（如'#'），以 ！表示一个结点值的结束（如'!'）
+
+- 二叉树反序列化：根据某种遍历顺序得到的序列化字符串结果str，重构二叉树
+
+例如，我们可以把一个只有根节点为1的二叉树序列化为"1,"，然后通过自己的函数来解析回这个二叉树
+
+**分析：**
+
+<img src="https://s1.ax1x.com/2020/08/27/dfyt7n.png" alt="dfyt7n.png" style="zoom:50%;" />
+
+将
+
+**序列化：**
+
+如图所示的二叉树被序列化后的字符串为 "1!2!4!#!#!#!3!5!#!#!6!#!#"，这里要注意下456三个节点，他们的子节点为空，也需要序列化进去。因为序列化是从根节点开始的，因此可以根据前序遍历来序列化二叉树，遇到空节点时，将其序列化为指定的字符，并在数值之间要添加指定的分隔符。
+
+**反序列化：**
+
+由于序列化是根据前序遍历左的，因此字符串 "1!2!4!#!#!#!3!5!#!#!6!#!#" 的第一个数字 1 也就是根节点的值，接下来的 2 为根节点的左子节点，**这里 4 的判断需要注意下，如果4是1的右子节点，那么2后面跟着的应该是两个##，即2是一个叶子节点，而这里2后面直接跟着的就是4，那么说明4就是2的左子节点。**4后面跟着的是两个##，说明4是叶子节点，则返回到2节点，重建它的右子节点。此时下一个字符还是#，表明2节点的右子节点为空，则2节点的左子树、右子树都已经构建完毕，接下来返回到了根节点，开始反序列化根节点的右子树。
+
+此时字符为3，因此右子树的根节点为3，左子节点为5，同样也是叶子节点。在右节点6后面也是两个##，说明也是一个叶子节点。
+
+```java
+package com.wavever.demo;
+
+class TreeNode {
+    int val = 0;
+    TreeNode left = null;
+    TreeNode right = null;
+
+    public TreeNode(int val) {
+        this.val = val;
+    }
+}
+
+public class Demo {
+
+    String serialize(TreeNode root) {
+        StringBuilder sb = new StringBuilder();
+        serializeCore(sb, root);
+        if (sb.length() > 0) {
+            //删除最后多余的分隔符
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        return sb.toString();
+    }
+
+    void serializeCore(StringBuilder sb, TreeNode root) {
+        if (root == null) {
+            sb.append("#!");
+        } else {
+            sb.append(root.val).append("!");
+            serializeCore(sb, root.left);
+            serializeCore(sb, root.right);
+        }
+    }
+
+    //用一个全局变量保存当前反序列化的 index，因为每次遍历都会++，因此需要初始化为 -1
+    int mDeserializeIndex = -1;
+
+    TreeNode deserialize(String str) {
+        if (str == null || str.isEmpty()) return null;
+        String[] nodeStr = str.split("!");
+        return deserializeCore(nodeStr);
+    }
+
+    TreeNode deserializeCore(String[] nodeStr) {
+        //如果此时 index 大于数组的长度则说明遍历完成
+        if (mDeserializeIndex > nodeStr.length) return null;
+        mDeserializeIndex++;
+        TreeNode node = null;
+        //如果当前字符为数字，则生成一个Node，并再去反序列化它的左节点和右节点
+        if (!nodeStr[mDeserializeIndex].equals("#")) {
+            node = new TreeNode(Integer.parseInt(nodeStr[mDeserializeIndex]));
+            node.left = deserializeCore(nodeStr);
+            node.right = deserializeCore(nodeStr);
+        }
+        //如果当前字符为#，则返回空，表示没有子节点
+        return node;
+    }
+
+    public static void main(String[] args) {
+        TreeNode head = new TreeNode(1);
+        TreeNode node2 = new TreeNode(2);
+        TreeNode node3 = new TreeNode(3);
+        TreeNode node4 = new TreeNode(4);
+        TreeNode node5 = new TreeNode(5);
+        TreeNode node6 = new TreeNode(6);
+        head.left = node2;
+        node2.left = node4;
+        head.right = node3;
+        node3.left = node5;
+        node3.right = node6;
+        Demo demo = new Demo();
+        String serializeTree = demo.serialize(head);
+        System.out.println(serializeTree);
+        TreeNode deserializeNode = demo.deserialize(serializeTree);
+        printTree(deserializeNode);
+    }
+
+    private static void printTree(TreeNode node) {
+        if (node != null) {
+            System.out.println(node.val);
+            printTree(node.left);
+            printTree(node.right);
+        } else {
+            System.out.print("#");
+        }
+    }
+}
+
+```
+
+### [36、字符串的排列](https://www.nowcoder.com/practice/fe6b651b66ae47d7acce78ffdd9a96c7?tpId=13&rp=1&ru=%252Fta%252Fcoding-interviews&qru=%252Fta%252Fcoding-interviews%252Fquestion-ranking)
+
+输入一个字符串,按字典序打印出该字符串中字符的所有排列。例如输入字符串abc，则按字典序打印出由字符 a、b、c 所能排列出来的所有字符串 abc、acb、bac、bca、cab 和 cba。
+
+**分析：**
+
+第一步：求出所有可能出现在第一个位置的字符，可以通过将第一个字符依次和后面所有的字符交换，如：**a**bc  b**a**c  cb**a**。
+
+第二步：固定一个字符，求后面所有字符的排列，此时后面所有字符依然可以分为两部分：第一个字符和后边的字符，然后再逐一按照步骤一样交换。
+
+综上，该问题可以使用递归解决。
+
+```java
+public class Demo {
+
+    public ArrayList<String> Permutation(String str) {
+        ArrayList<String> list = new ArrayList<>();
+        if (str != null && !str.isEmpty()) {
+            permutationCore(str.toCharArray(), 0, list);
+            //按字典顺序排列
+            Collections.sort(list);
+        }
+        return list;
+    }
+
+    private void permutationCore(char[] array, int index, ArrayList<String> list) {
+      	//当指向字符串末尾时终止递归
+        if (index == array.length - 1) {
+            list.add(String.valueOf(array));
+            System.out.println("add: " + String.valueOf(array));
+        } else {
+            // 遍历所有可能出现在第一个位置的字符
+            for (int i = index; i < array.length; i++) {
+                // 过滤重复值，保证例如 aabc 下没有重复，
+								// 这里 array[i] != array[index] 保证不需要对 aa 进行交换的，而 i == index 
+								// 保证在首次进入等 i 和 index 相等时也会正常执行
+                if (i == index || array[index] != array[i]) {
+                    swap(array, index, i);
+                    System.out.println("swap1:" + String.valueOf(array));
+                    permutationCore(array, index + 1, list);
+                    //当遍历完成一个后进行重置，例如 abc bac cba后，重置为 abc，接下来从b开始递归
+                    swap(array, index, i);
+                    System.out.println("swap2:" + String.valueOf(array));
+                }
+            }
+        }
+    }
+
+    private void swap(char[] array, int i, int j) {
+        char temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(new Demo().Permutation("abc"));
+    }
+}
+```
+
+
 
