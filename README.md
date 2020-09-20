@@ -2072,5 +2072,40 @@ public class Demo {
 }
 ```
 
+### [37、数组中出现次数超过一半的数字](https://www.nowcoder.com/practice/e8a1b01a2df14cb2b228b30ee6a92163?tpId=13&rp=1&ru=%252Fta%252Fcoding-interviews&qru=%252Fta%252Fcoding-interviews%252Fquestion-ranking)
 
+数组中有一个数字出现的次数超过数组长度的一半，请找出这个数字。例如输入一个长度为 9 的数组 {1,2,3,2,2,2,5,4,2}。由于数字 2 在数组中出现了 5 次，超过数组长度的一半，因此输出 2。如果不存在则输出 0。
 
+**分析：**
+
+数组中一个数出现次数超过数组长度一半，即**它出现的次数比其他所有数字出现的次数的和还要多**。因此需要在遍历数组的时候保存两个值：数字和次数，当遍历到一个数字时，如果和保存的一致，则次数加一，不同则减一。如果次数为 0，则保存下一个数字，并设次数为1，**最后要找的数字肯定是最后一次把次数设置为1的数字。**
+
+```java
+public class Solution {
+    public int MoreThanHalfNum_Solution(int [] array) {
+        if (array == null || array.length <= 0) return 0;
+        int result = array[0];
+        int times = 1;
+        //遍历数组，等于拿重复数字来抵消非重复数字，最后重复的数组还是要多
+        for (int i = 1; i < array.length; i++) {
+            if (times == 0) {
+                result = array[i];
+                times = 1;
+            } else if (result == array[i]) {
+                times++;
+            } else {
+                times--;
+            }
+        }
+        times = 0;
+        // 遍历数组，检查 result 的次数是否多余数组长度的一半
+        for (int i = 0; i < array.length; i++) {
+            if (result == array[i]) times++;
+        }
+        // 这里一定要用 >，因为是大于一半
+        return result = times * 2 > array.length ? result : 0;
+    }
+}
+```
+
+### [38、最小 k 个数]()
